@@ -58,6 +58,8 @@ std::istream &operator>>(std::istream &is, LyricsFetcher_ &fetcher)
 		fetcher = std::make_unique<TekstowoFetcher>();
 	else if (s == "zeneszoveg")
 		fetcher = std::make_unique<ZeneszovegFetcher>();
+	else if (s == "chiasenhac")
+		fetcher = std::make_unique<ChiasenhacFetcher>();
 	else if (s == "internet")
 		fetcher = std::make_unique<InternetLyricsFetcher>();
 	else
@@ -160,9 +162,9 @@ LyricsFetcher::Result GoogleLyricsFetcher::fetch(const std::string &artist,
 	else
 		search_str = "lyrics";
 	search_str += "+";
-	search_str += Curl::escape(artist);
-	search_str += "+";
 	search_str += Curl::escape(title);
+	search_str += "+";
+	search_str += Curl::escape(artist);
 	
 	std::string google_url = "http://www.google.com/search?hl=en&ie=UTF-8&oe=UTF-8&q=";
 	google_url += search_str;
@@ -187,6 +189,24 @@ LyricsFetcher::Result GoogleLyricsFetcher::fetch(const std::string &artist,
 
 	data = unescapeHtmlUtf8(urls[0]);
 
+	CURLcode code2 = Curl::perform(data, data.c_str(), data.c_str());
+	
+	if (code2 != CURLE_OK)
+	{
+		result.second = curl_easy_strerror(code);
+		return result;
+	}
+
+	auto url = getContent("sending you to <a href=\"(.*?)\">.*?</a>", data);
+
+	if (url.empty() || !isURLOk(url[0]))
+	{
+		result.second = msgNotFound;
+		return result;
+	}
+	
+	data = unescapeHtmlUtf8(url[0]);
+	
 	URL = data.c_str();
 	return LyricsFetcher::fetch("", "");
 }
