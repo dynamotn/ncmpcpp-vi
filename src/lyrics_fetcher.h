@@ -161,6 +161,14 @@ protected:
 	virtual const char *regex() const override { return "<div id=\"fulllyric\".*?>(.*?)</div>"; }
 };
 
+struct NhacVNFetcher : public GoogleLyricsFetcher
+{
+	virtual const char *name() const override { return "nhac.vn"; }
+
+protected:
+	virtual const char *regex() const override { return "<div class=\"content_lyrics.*?\">(.*?)</div>"; }
+};
+
 struct InternetLyricsFetcher : public GoogleLyricsFetcher
 {
 	virtual const char *name() const override { return "the Internet"; }

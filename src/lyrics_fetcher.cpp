@@ -60,6 +60,8 @@ std::istream &operator>>(std::istream &is, LyricsFetcher_ &fetcher)
 		fetcher = std::make_unique<ZeneszovegFetcher>();
 	else if (s == "chiasenhac")
 		fetcher = std::make_unique<ChiasenhacFetcher>();
+	else if (s == "nhacvn")
+		fetcher = std::make_unique<NhacVNFetcher>();
 	else if (s == "internet")
 		fetcher = std::make_unique<InternetLyricsFetcher>();
 	else
